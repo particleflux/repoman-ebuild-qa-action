@@ -29,7 +29,7 @@ ln -s "$gentoo_repo/profiles/$profile" /etc/portage/make.profile
 
 if [ "$portage_version" = "latest" ]; then
     portage_version=$(grep DIST "$gentoo_repo/sys-apps/portage/Manifest" | sort --version-sort | tail -1 | cut -d ' ' -f 2)
-    portage_version=${portage_version%.tar.bz2}
+    portage_version=${portage_version%.tar.xz}
     portage_version=${portage_version#portage-} # e.g. "2.3.20"
 fi
 echo "Using portage version \"$portage_version\""
