@@ -19,6 +19,12 @@ inputs:
             `2.3.80`. `latest` is the default value, which uses the latest
             released version.
         default: 'latest'
+    repoman_version:
+        description: >
+            The repoman version to use, e.g. `3.0.3`. `latest` is the default
+            value, which uses the latest released version.
+            (versions <2.3.5 are not supported)
+        default: 'latest'
     profile:
         description: >
             The gentoo profile to set before running repoman. The default

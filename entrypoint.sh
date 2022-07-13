@@ -6,7 +6,10 @@ repoman_args="$INPUT_REPOMAN_ARGS"
 path="$INPUT_PATH"
 profile="$INPUT_PROFILE"
 portage_version="$INPUT_PORTAGE_VERSION"
+repoman_version="$INPUT_REPOMAN_VERSION"
 gentoo_repo="$INPUT_GENTOO_REPO"
+
+wd=$(pwd)
 
 apk add python3 py3-yaml py3-lxml git bash
 ln -s /usr/bin/python3 /usr/bin/python
@@ -39,9 +42,29 @@ if [ -z "$portage_version" ]; then
     exit 3
 fi
 
+if [ "$repoman_version" = "latest" ]; then
+    repoman_version=$(grep DIST "$gentoo_repo/app-portage/repoman/Manifest" | sort | tail -1 | cut -d ' ' -f 2)
+    repoman_version=${repoman_version%.tar.?z*}
+    repoman_version=${repoman_version#repoman-} # e.g. "3.0.3"
+fi
+echo "Using repoman version \"$repoman_version\""
+
+if [ -z "$repoman_version" ]; then
+    echo "Unable to determine repoman version."
+    exit 4
+fi
+
 wget -O - "https://github.com/gentoo/portage/archive/portage-${portage_version}.tar.gz" | tar xz -C /
 ln -s "/portage-portage-${portage_version}/cnf/repos.conf" /etc/portage/repos.conf
-ln -s "/portage-portage-${portage_version}/repoman/bin/repoman" /usr/bin/repoman
+
+cd "/portage-portage-${portage_version}/"
+python3 setup.py install
+
+wget -O - "https://dev.gentoo.org/~zmedico/portage/archives/repoman-${repoman_version}.tar.bz2" | tar xj -C /
+cd "/repoman-${repoman_version}/"
+python3 setup.py install
+
+cd "$wd"
 
 if [ ! -d ".git" ]; then
     echo
@@ -52,6 +75,8 @@ if [ ! -d ".git" ]; then
     echo "        - uses: actions/checkout@v2"
     echo
 fi
+
+git config --global --add safe.directory "$wd"
 
 if [ -n "$path" ]; then
     cd "$path"
