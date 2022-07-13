@@ -21,7 +21,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - uses: lucianposton/repoman-ebuild-qa-action@v1
+            - uses: particleflux/repoman-ebuild-qa-action@v2
 ```
 
 ## Input Parameters
